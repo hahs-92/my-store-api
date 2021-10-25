@@ -31,4 +31,30 @@ router.get('/:id', (req, res) => {
   })
 })
 
+router.post('/',(req, res) => {
+  const body = req.body
+  const newUser = service.create(body)
+
+  res.status(201).json({
+    message: 'created',
+    newUser
+  })
+})
+
+router.patch('/:id',(req, res) => {
+  const { id } = req.params
+  const body = req.body
+  const user = service.update(id, body)
+
+  res.json(user)
+})
+
+router.delete('/:id',(req, res) => {
+  const { id } = req.params
+
+  const user = service.delete(id)
+
+  res.json(user)
+})
+
 module.exports = router

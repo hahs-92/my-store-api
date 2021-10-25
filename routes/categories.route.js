@@ -1,20 +1,13 @@
 const express = require('express')
+const CategoriesService = require('../services/categories.service')
 
 const router = express.Router()
-
-const ctgs = [
-  {
-    id: 1,
-    name: "Tech"
-  },
-  {
-    id: 2,
-    name: "home"
-  }
-]
+const service = new CategoriesService()
 
 
 router.get('/', (req, res) => {
+  const ctgs = service.find()
+
   res.json({
     data: ctgs
   })
@@ -25,7 +18,7 @@ router.get('/:id_category', (req, res) => {
 
   const { id_category } = req.params
 
-  const ctg = ctgs.filter(item => item.id == id_category)
+  const ctg = service.findOne(id_category)
 
   res.json({
     data: ctg
