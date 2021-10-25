@@ -4,6 +4,7 @@ const faker = require('faker')
 
 const router = express.Router()
 
+
 const data = [
   {
     id: 1,
@@ -56,6 +57,15 @@ router.get('/:id', (req, res) => {
 
   res.json({
     data: product
+  })
+})
+
+router.post('/',(req, res) => {
+  const body = req.body
+
+  res.json({
+    message: 'created',
+    data: body
   })
 })
 
