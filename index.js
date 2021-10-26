@@ -3,11 +3,25 @@ const express = require('express')
 const routerApi = require('./routes')
 //ERRORS Functions
 const { errorLog, errorHandler, errorBoomHandler} = require('./middlewares/error.handler.js')
+//CORS
+const cors = require('cors')
 
 const app = express()
 const port = 3005;
 
+const whiteList = ['http://localhost:3000', 'https://,yapp.co']
+const options = {
+  origin: (origin, callback) => {
+    if(whiteList.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('not Allow it'))
+    }
+  }
+}
+
 app.use(express.json())
+app.use(cors(options))
 
 
 app.get('/', (req, res) => {

@@ -5,11 +5,13 @@ function validatorHandler (schema, property) {
   //es una clousure
   return (req, res, next) => {
     const data = req[property]
-    const { error } = schema.validate(data)
+    const { error } = schema.validate(data, {abortEarly: false}) //!abortEarly para que envie todos los errores a la vez
 
     if(error) {
-      boom.badRequest(error)
+      next(boom.badRequest(error))
     }
+
+    next()
   }
 }
 
