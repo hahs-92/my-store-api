@@ -7,12 +7,12 @@ const { errorLog, errorHandler, errorBoomHandler} = require('./middlewares/error
 const cors = require('cors')
 
 const app = express()
-const port = 3005;
+const port = process.env.PORT || 3005;
 
 const whiteList = ['http://localhost:3000', 'https://,yapp.co']
 const options = {
   origin: (origin, callback) => {
-    if(whiteList.includes(origin)) {
+    if(whiteList.includes(origin) || !origin) {
       callback(null, true)
     } else {
       callback(new Error('not Allow it'))
