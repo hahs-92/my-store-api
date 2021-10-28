@@ -3,6 +3,8 @@ const faker = require('faker')
 //db
 // const getConnection = require('../libs/postgres')
 const pool = require('../libs/postgres.pool')
+//LIBs
+const { models } = require('../libs/sequelize')
 
 class UsersService {
   constructor() {
@@ -44,9 +46,13 @@ class UsersService {
     // return resp.rows
 
     //conection with pool
-    const query = `SELECT * FROM tasks`
-    const resp = await this.pool.query(query)
-    return resp.rows
+    // const query = `SELECT * FROM tasks`
+    // const resp = await this.pool.query(query)
+    // return resp.rows
+
+    //WITH ORM
+    const resp = await models.User.findAll()
+    return resp
   }
 
   findOne(id) {
