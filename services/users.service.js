@@ -1,3 +1,4 @@
+const boom = require('@hapi/boom')
 //API FAKE
 const faker = require('faker')
 //db
@@ -28,7 +29,7 @@ class UsersService {
 
   }
 
-  create(data) {
+  async create(data) {
     // const newUser = {
     //   id: faker.datatype.uuid(),
     //   ...data
@@ -36,7 +37,9 @@ class UsersService {
 
     // this.users.push(newUser)
     // return newUser
-    return data
+
+    const newUser = await models.User.create(data)
+    return newUser
   }
 
   async find() {
@@ -55,36 +58,53 @@ class UsersService {
     return resp
   }
 
-  findOne(id) {
+  async findOne(id) {
     // return this.users.find(item => item.id === id)
-    return { id }
+    // return { id }
+
+    const user = await models.User.findByPk(id);
+
+    if(!user) {
+      throw boom.notFound('user not found')
+    }
+
+    return user
   }
 
-  update(id, changes) {
-    const index = this.users.findIndex(item => item.id === id)
+  async update(id, changes) {
+    // const index = this.users.findIndex(item => item.id === id)
 
-    if(index === -1) {
-      throw new Error('product not found')
-    }
+    // if(index === -1) {
+    //   throw new Error('product not found')
+    // }
 
-    const user = this.users[index]
-    this.users[index] = {
-      ...user,
-      ...changes
-    }
+    // const user = this.users[index]
+    // this.users[index] = {
+    //   ...user,
+    //   ...changes
+    // }
 
-    return this.users[index]
+    // return this.users[index]
+
+    const user = await this.findOne(id)
+    const resp = await user.update(changes)
+    return resp
+
   }
 
-  delete(id) {
-    const index = this.users.findIndex(item => item.id === id)
+  async delete(id) {
+    // const index = this.users.findIndex(item => item.id === id)
 
-    if(index === -1) {
-      throw new Error('product not found')
-    }
+    // if(index === -1) {
+    //   throw new Error('product not found')
+    // }
 
-    this.users.splice(index, 1)
-    return { id }
+    // this.users.splice(index, 1)
+    // return { id }
+
+    const user = await this.findOne(id)
+    await user.destroy()
+    return id
   }
 }
 
