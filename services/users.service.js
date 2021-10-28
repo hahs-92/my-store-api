@@ -1,5 +1,7 @@
 //API FAKE
 const faker = require('faker')
+//db
+const getConnection = require('../libs/postgres')
 
 class UsersService {
   constructor() {
@@ -22,21 +24,26 @@ class UsersService {
   }
 
   create(data) {
-    const newUser = {
-      id: faker.datatype.uuid(),
-      ...data
-    }
+    // const newUser = {
+    //   id: faker.datatype.uuid(),
+    //   ...data
+    // }
 
-    this.users.push(newUser)
-    return newUser
+    // this.users.push(newUser)
+    // return newUser
+    return data
   }
 
-  find() {
-    return this.users
+  async find() {
+    // return this.users
+    const client = await getConnection()
+    const resp = await client.query('SELECT * FROM tasks')
+    return resp.rows
   }
 
   findOne(id) {
-    return this.users.find(item => item.id === id)
+    // return this.users.find(item => item.id === id)
+    return { id }
   }
 
   update(id, changes) {
