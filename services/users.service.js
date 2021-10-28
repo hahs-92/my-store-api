@@ -1,12 +1,15 @@
 //API FAKE
 const faker = require('faker')
 //db
-const getConnection = require('../libs/postgres')
+// const getConnection = require('../libs/postgres')
+const pool = require('../libs/postgres.pool')
 
 class UsersService {
   constructor() {
     this.users = []
     this.generate()
+    this.pool = pool
+    this.pool.on('error', (err) => console.error(err))
   }
 
   generate() {
@@ -35,9 +38,14 @@ class UsersService {
   }
 
   async find() {
-    // return this.users
-    const client = await getConnection()
-    const resp = await client.query('SELECT * FROM tasks')
+    // connection with client
+    // const client = await getConnection()
+    // const resp = await client.query('SELECT * FROM tasks')
+    // return resp.rows
+
+    //conection with pool
+    const query = `SELECT * FROM tasks`
+    const resp = await this.pool.query(query)
     return resp.rows
   }
 
