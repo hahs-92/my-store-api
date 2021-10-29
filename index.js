@@ -2,7 +2,12 @@ const express = require('express')
 //ROUTES
 const routerApi = require('./routes')
 //ERRORS Functions
-const { errorLog, errorHandler, errorBoomHandler} = require('./middlewares/error.handler.js')
+const {
+  errorLog,
+  errorHandler,
+  errorBoomHandler,
+  ormErrorHandler
+} = require('./middlewares/error.handler.js')
 //CORS
 const cors = require('cors')
 
@@ -32,6 +37,7 @@ routerApi(app)
 
 //error handler
 app.use(errorLog)
+app.use(ormErrorHandler)
 app.use(errorBoomHandler)
 app.use(errorHandler)
 
