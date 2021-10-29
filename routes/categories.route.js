@@ -1,38 +1,90 @@
 const express = require('express')
 const CategoriesService = require('../services/categories.service')
+//VALIDATIONS
+const validatorHandler = require('../middlewares/validate.handler')
+//SCHEMAS
+const {
+  createCategorySchema,
+  updateCategorySchema,
+  getCategorySchema
+} = require('../schemas/category.schema')
 
 const router = express.Router()
 const service = new CategoriesService()
 
 
-router.get('/', (req, res) => {
-  const ctgs = service.find()
+router.get('/', async(req, res, next) => {
+  try {
+    const ctgs = await service.find()
 
-  res.json({
-    data: ctgs
-  })
+    res.json(ctgs)
+  } catch (error) {
+    next(error)
+  }
 })
 
+router.get('/:id',
+  validatorHandler(getCategorySchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const category = await service.findOne(id);
+      res.json(category);
+    } catch (error) {
+      next(error);
+    }
+  }
+)
 
-router.get('/:id_category', (req, res) => {
+// router.get('/:id_category/products/:id_product', (req, res) => {
+//   const { id_category } = req.params
+//   const { id_product } = req.params
 
-  const { id_category } = req.params
+//   res.json({
+//     id_category: id_category,
+//     id_product: id_product
+//   })
+// })
 
-  const ctg = service.findOne(id_category)
+router.post('/',
+  validatorHandler(createCategorySchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const body = req.body
+      const newCategory = await service.create(body)
+      res.status(201).json(newCategory);
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
-  res.json({
-    data: ctg
-  })
-})
+router.patch('/:id',
+  validatorHandler(getCategorySchema, 'params'),
+  validatorHandler(updateCategorySchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const body = req.body;
+      const category = await service.update(id, body);
+      res.json(category);
+    } catch (error) {
+      next(error);
+    }
+  }
+)
 
-router.get('/:id_category/products/:id_product', (req, res) => {
-  const { id_category } = req.params
-  const { id_product } = req.params
-
-  res.json({
-    id_category: id_category,
-    id_product: id_product
-  })
-})
+router.delete('/:id',
+  validatorHandler(getCategorySchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await service.delete(id);
+      res.status(201).json({id});
+    } catch (error) {
+      next(error);
+    }
+  }
+)
 
 module.exports = router

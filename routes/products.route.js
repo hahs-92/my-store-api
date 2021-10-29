@@ -12,7 +12,7 @@ const router = express.Router()
 const service = new ProductsService()
 
 
-router.get('/', async(req, res) => {
+router.get('/', async(req, res, next) => {
   try {
     const products = await service.find()
 
@@ -21,17 +21,15 @@ router.get('/', async(req, res) => {
       count: products.length
     })
   } catch (error) {
-    res.status(404).json({
-      message: error.message
-    })
+      next(error)
   }
 
 })
 
 
-router.get('/filter', async(req, res) => {
-  res.send('hi, Los endpoints especificos deben declararsen antes de los endpoints dinamicos. ')
-})
+// router.get('/filter', async(req, res) => {
+//   res.send('hi, Los endpoints especificos deben declararsen antes de los endpoints dinamicos. ')
+// })
 
 router.get('/:id',
   validatorHandler(getProductSchema, 'params'),
@@ -53,14 +51,16 @@ router.get('/:id',
 
 router.post('/',
   validatorHandler(createProductSchema, 'body'),
-  async(req, res) => {
-    const body = req.body
-    const newProduct = await service.create(body)
+  async (req, res, next) => {
+    try {
+      const body = req.body
+      const newProduct = await service.create(body)
 
-    res.status(201).json({
-      message: 'created',
-      newProduct
-    })
+      res.status(201).json(newProduct)
+    } catch (error) {
+      next(error)
+    }
+
   }
 )
 
@@ -81,12 +81,19 @@ router.patch('/:id',
   }
 )
 
-router.delete('/:id',async(req, res) => {
-  const { id } = req.params
+router.delete('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  async(req, res, next) => {
+    try {
+      const { id } = req.params
+      await service.delete(id)
 
-  const product = await service.delete(id)
+      res.status(201).json({id})
 
-  res.json(product)
-})
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 module.exports = router

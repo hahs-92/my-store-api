@@ -12,4 +12,4 @@ module.exports = {
   down: async (queryInterface) => {
     await queryInterface.dropTable(CUSTOMER_TABLE)
   }
-};
+}
