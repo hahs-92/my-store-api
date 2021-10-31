@@ -47,7 +47,7 @@ class ProductsService {
   }
 
 
-  async find() {
+  async find(query) {
     // const query = `SELECT * FROM tasks`
     // // const resp = await this.pool.query(query)
     // //with orm
@@ -56,9 +56,18 @@ class ProductsService {
     // // return resp.rows
     // return data
 
-    const products = await models.Product.findAll({
+    const { limit, offset } = query
+
+    const options = {
       include: ['category']
-    })
+    }
+
+    if(limit && offset) {
+      options.limit = limit
+      options.offset = offset
+    }
+
+    const products = await models.Product.findAll(options)
     return products
   }
 

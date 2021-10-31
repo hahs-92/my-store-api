@@ -4,7 +4,12 @@ const ProductsService = require('../services/products.service')
 //MIDDLEWARES
 const validatorHandler = require('../middlewares/validate.handler')
 //SCHEMAS
-const { createProductSchema, updateProductSchema, getProductSchema } = require('../schemas/product.schema')
+const {
+  createProductSchema,
+  updateProductSchema,
+  getProductSchema,
+  queryProductSchema
+} = require('../schemas/product.schema')
 
 
 //INSTANCIAS
@@ -12,19 +17,21 @@ const router = express.Router()
 const service = new ProductsService()
 
 
-router.get('/', async(req, res, next) => {
-  try {
-    const products = await service.find()
+router.get('/',
+  validatorHandler(queryProductSchema, 'query'),
+  async(req, res, next) => {
+    try {
+      const products = await service.find(req.query)
 
-    res.json({
-      data: products,
-      count: products.length
-    })
-  } catch (error) {
-      next(error)
+      res.json({
+        data: products,
+        count: products.length
+      })
+    } catch (error) {
+        next(error)
+    }
   }
-
-})
+)
 
 
 // router.get('/filter', async(req, res) => {
