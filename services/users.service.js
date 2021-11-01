@@ -69,6 +69,14 @@ class UsersService {
     return resp
   }
 
+  //AUTH
+  async findByEmail(email) {
+    const resp = await models.User.findOne({
+      where: { email }
+    })
+    return resp
+  }
+
   async findOne(id) {
     // return this.users.find(item => item.id === id)
     // return { id }

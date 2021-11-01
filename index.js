@@ -1,4 +1,5 @@
 const express = require('express')
+const passport = require('passport')
 //ROUTES
 const routerApi = require('./routes')
 //MIDDLEWARES ERRORS
@@ -29,6 +30,9 @@ const options = {
 
 app.use(express.json())
 app.use(cors(options))
+//auth
+app.use(passport.initialize())
+require('./utils/auth')
 
 
 app.get('/', (req, res) => {
