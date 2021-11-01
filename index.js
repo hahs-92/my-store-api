@@ -1,13 +1,15 @@
 const express = require('express')
 //ROUTES
 const routerApi = require('./routes')
-//ERRORS Functions
+//MIDDLEWARES ERRORS
 const {
   errorLog,
   errorHandler,
   errorBoomHandler,
   ormErrorHandler
 } = require('./middlewares/error.handler.js')
+//MIDDLEWARES AUTH
+const { checkApiKey } = require('./middlewares/auth.handler')
 //CORS
 const cors = require('cors')
 
@@ -32,6 +34,14 @@ app.use(cors(options))
 app.get('/', (req, res) => {
   res.send('hi there¡')
 })
+
+//ruta de prueba
+app.get('/new-route',
+  checkApiKey,
+  (req, res) => {
+    res.send('hi, i am a new route')
+  }
+)
 
 routerApi(app)
 
