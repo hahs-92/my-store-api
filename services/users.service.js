@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 const boom = require('@hapi/boom')
 //API FAKE
 const faker = require('faker')
@@ -9,25 +10,24 @@ const { models } = require('../libs/sequelize')
 
 class UsersService {
   constructor() {
-    this.users = []
-    this.generate()
-    this.pool = pool
-    this.pool.on('error', (err) => console.error(err))
+    // this.users = []
+    // this.generate()
+    // this.pool = pool
+    // this.pool.on('error', (err) => console.error(err))
   }
 
-  generate() {
-    const limit = 10
+  // generate() {
+  //   const limit = 10
 
-    for(let index = 0; index < limit; index++) {
-      this.users.push({
-        id: faker.datatype.uuid(),
-        name: faker.name.firstName(),
-        avatar: faker.image.imageUrl(),
-        email: faker.internet.email()
-      })
-    }
-
-  }
+  //   for(let index = 0; index < limit; index++) {
+  //     this.users.push({
+  //       id: faker.datatype.uuid(),
+  //       name: faker.name.firstName(),
+  //       avatar: faker.image.imageUrl(),
+  //       email: faker.internet.email()
+  //     })
+  //   }
+  // }
 
   async create(data) {
     // const newUser = {
@@ -38,7 +38,16 @@ class UsersService {
     // this.users.push(newUser)
     // return newUser
 
-    const newUser = await models.User.create(data)
+    const hash = await bcrypt.hash(data.password, 10)
+    const newUser = await models.User.create({
+      ...data,
+      password: hash
+    })
+
+    //NO DEBEMOS RETORNAR EL PASSWORD
+    //ASI SE HACE CON SEQUELIZE (dataValues)
+    delete newUser.dataValues.password
+
     return newUser
   }
 
