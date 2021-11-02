@@ -4,6 +4,7 @@ const passport = require('passport')
 const CategoriesService = require('../services/categories.service')
 //VALIDATIONS
 const validatorHandler = require('../middlewares/validate.handler')
+const { checkRoles } = require('../middlewares/auth.handler')
 //SCHEMAS
 const {
   createCategorySchema,
@@ -15,17 +16,23 @@ const router = express.Router()
 const service = new CategoriesService()
 
 
-router.get('/', async(req, res, next) => {
-  try {
-    const ctgs = await service.find()
+router.get('/',
+  passport.authenticate('jwt', { session: false }), // este middleware debe ir para que funcion checkroles
+  checkRoles(['admin','customer']),
+  async(req, res, next) => {
+    try {
+      const ctgs = await service.find()
 
-    res.json(ctgs)
-  } catch (error) {
-    next(error)
+      res.json(ctgs)
+    } catch (error) {
+      next(error)
+    }
   }
-})
+)
 
 router.get('/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles(['admin','customer']),
   validatorHandler(getCategorySchema, 'params'),
   async (req, res, next) => {
     try {
@@ -51,6 +58,7 @@ router.get('/:id',
 //ruta protegida
 router.post('/',
   passport.authenticate('jwt', { session: false }),
+  checkRoles(['admin']), //middleware to check role // clousure
   validatorHandler(createCategorySchema, 'body'),
   async (req, res, next) => {
     try {
@@ -64,6 +72,8 @@ router.post('/',
 )
 
 router.patch('/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles(['admin','customer']),
   validatorHandler(getCategorySchema, 'params'),
   validatorHandler(updateCategorySchema, 'body'),
   async (req, res, next) => {
@@ -79,6 +89,8 @@ router.patch('/:id',
 )
 
 router.delete('/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles(['admin','customer']),
   validatorHandler(getCategorySchema, 'params'),
   async (req, res, next) => {
     try {
