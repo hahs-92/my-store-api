@@ -32,7 +32,7 @@ router.post(
   validatorHandler(createOrderSchema, 'body'),
   async (req, res, next) => {
     try {
-      const body = req.body;
+      const body = req.body
       const newOrder = await service.create(body)
       res.status(201).json(newOrder)
     } catch (error) {

@@ -1,10 +1,10 @@
 const express = require('express')
 const passport = require('passport')
-const jwt = require('jsonwebtoken')
+//SERVICE
+const AuthService = require('../services/auth.service')
 
-const {config} = require('../config/config')
-
-const router = express.Router();
+const router = express.Router()
+const service = new AuthService()
 
 
 router.post('/login',
@@ -12,24 +12,15 @@ router.post('/login',
   async (req, res, next) => {
     try {
       const user = req.user
-      const payload = {
-        sub: user.id,
-        role: user.role
-      }
-
-      const token = jwt.sign(payload, config.jwtSecret)
-
       // res.json(req.user) //EL USER ES EL QUE RETORNA LA ESTRATEGIA DE PASSPORT
 
-      res.json({
-        user,
-        token
-      })
+      res.json(service.signToken(user))
+
     } catch (error) {
-      next(error);
+      next(error)
     }
   }
 )
 
 
-module.exports = router;
+module.exports = router
